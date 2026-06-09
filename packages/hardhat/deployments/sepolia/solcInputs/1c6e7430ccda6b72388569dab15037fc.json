@@ -1,0 +1,36 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Counter.sol": {
+      "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.13;\r\n\r\ncontract Counter {\r\n    // 가스 효율을 위해 immutable 사용\r\n    address public immutable owner;\r\n    uint256 private counter = 0;\r\n\r\n    // 에러 메시지 문자열 대신 커스텀 에러를 사용하여 가스비를 절감\r\n    error NotOwner();\r\n    error CounterUnderflow();\r\n\r\n    // 데이터 변화를 외부 앱(프론트엔드)에서 감지할 수 있도록 이벤트를 추가\r\n    event CounterChanged(uint256 newValue, address indexed actor);\r\n\r\n    constructor() {\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner() {\r\n        if (msg.sender != owner) {\r\n            revert NotOwner();\r\n        }\r\n        _;\r\n    }\r\n\r\n    function getCounter() public view returns (uint256) {\r\n        return counter;\r\n    }\r\n\r\n    function incrementCounter() public {\r\n        counter++;\r\n        emit CounterChanged(counter, msg.sender);\r\n    }\r\n\r\n    function decrementCounter() public {\r\n        if (counter == 0) {\r\n            revert CounterUnderflow();\r\n        }\r\n        counter--;\r\n        emit CounterChanged(counter, msg.sender);\r\n    }\r\n\r\n    function resetCounter() public onlyOwner {\r\n        counter = 0;\r\n        emit CounterChanged(counter, msg.sender);\r\n    }\r\n}\r\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "paris",
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
